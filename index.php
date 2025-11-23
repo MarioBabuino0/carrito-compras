@@ -13,6 +13,7 @@
     <li class="nav-item"><a class="nav-link" href="registro.php">Registro</a></li>
     <li class="nav-item"><a class="nav-link" href="carrito.php">Carrito</a></li>
     <li class="nav-item"><a class="nav-link" href="perfil.php">Perfil</a></li>
+    <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
   </ul>
 </nav>
 <div class="container mt-4">

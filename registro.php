@@ -12,28 +12,46 @@
     <li class="nav-item"><a class="nav-link" href="registro.php">Registro</a></li>
     <li class="nav-item"><a class="nav-link" href="carrito.php">Carrito</a></li>
     <li class="nav-item"><a class="nav-link" href="perfil.php">Perfil</a></li>
+    <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
   </ul>
 </nav>
 
-<?php include("navbar.php"); ?>
-<div class="container mt-4">
-    <h2>Registro de Usuario</h2>
-    <form>
-        <!-- Formulario de registro: nombre, email, contraseña, etc. -->
-        <div class="mb-3">
-            <label class="form-label">Nombre</label>
-            <input type="text" class="form-control" name="nombre">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Correo</label>
-            <input type="email" class="form-control" name="email">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Contraseña</label>
-            <input type="password" class="form-control" name="contrasena">
-        </div>
-        <button type="submit" class="btn btn-primary">Registrarse</button>
-    </form>
-</div>
+
+<?php
+$conn = mysqli_connect('db', 'root', 'root_password', 'tienda');
+if(!$conn){
+    die('Error de conexión a la base de datos');
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = trim($_POST['nombre']);
+    $email = trim($_POST['email']);
+    $pass = $_POST['contrasena'];
+
+    // Verificar si ya existe el email
+    $existe = mysqli_query($conn, "SELECT id_usuario FROM usuarios WHERE email = '$email'");
+    if(mysqli_num_rows($existe) > 0){
+        echo "<p style='color:red;'>Ya existe una cuenta con ese email.</p>";
+    } else {
+        $hash = password_hash($pass, PASSWORD_DEFAULT);
+        $stmt = mysqli_prepare($conn, "INSERT INTO usuarios (nombre,email,contrasena) VALUES (?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, "sss", $nombre, $email, $hash);
+        if(mysqli_stmt_execute($stmt)){
+            echo "<p style='color:green;'>Usuario registrado correctamente. <a href='login.php'>Iniciar sesión</a></p>";
+        } else {
+            echo "<p style='color:red;'>Error al registrar usuario.</p>";
+        }
+    }
+}
+?>
+
+<h2>Crear cuenta</h2>
+<form method="post">
+    <label>Nombre: <input type="text" name="nombre" required></label><br>
+    <label>Email: <input type="email" name="email" required></label><br>
+    <label>Contraseña: <input type="password" name="contrasena" required></label><br>
+    <button type="submit">Registrarse</button>
+</form>
+
 </body>
 </html>
