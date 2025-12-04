@@ -1,5 +1,9 @@
 <?php
 session_start();
+if(!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin'){
+    header("Location: index.php");
+    exit();
+}
 $conn = mysqli_connect('db','root','root_password','tienda');
 if(!$conn) die('Error de conexión a la base de datos');
 
@@ -32,13 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
         $stmt = mysqli_prepare($conn,"UPDATE productos 
                                       SET nombre=?, modelo=?, descripcion=?, foto=?, precio=?, cantidad=? 
                                       WHERE id_producto=?");
-        mysqli_stmt_bind_param($stmt,"ssssdis",
+        mysqli_stmt_bind_param($stmt,"ssssdii",
                                $nombre,$modelo,$descripcion,$foto_data,$precio,$cantidad,$id_sel);
     } else {
         $stmt = mysqli_prepare($conn,"UPDATE productos 
                                       SET nombre=?, modelo=?, descripcion=?, precio=?, cantidad=? 
                                       WHERE id_producto=?");
-        mysqli_stmt_bind_param($stmt,"sssdis",
+        mysqli_stmt_bind_param($stmt,"sssdii",
                                $nombre,$modelo,$descripcion,$precio,$cantidad,$id_sel);
     }
 

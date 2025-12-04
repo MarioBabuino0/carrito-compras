@@ -8,17 +8,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $pass = $_POST['contrasena'];
 
-    $stmt = mysqli_prepare($conn, "SELECT id_usuario, nombre, contrasena FROM usuarios WHERE email = ?");
+    $stmt = mysqli_prepare($conn, "SELECT id_usuario, nombre, contrasena, rol FROM usuarios WHERE email = ?");
     mysqli_stmt_bind_param($stmt, "s", $email);
     mysqli_stmt_execute($stmt);
-    mysqli_stmt_bind_result($stmt, $id_usuario, $nombre, $hash);
+    mysqli_stmt_bind_result($stmt, $id_usuario, $nombre, $hash, $rol);
 
     if(mysqli_stmt_fetch($stmt)){
         if(password_verify($pass, $hash)){
             $_SESSION['id_usuario'] = $id_usuario;
             $_SESSION['nombre'] = $nombre;
             $_SESSION['email'] = $email;
-            header("Location: index.php");
+            $_SESSION['rol'] = $rol;
+
+            if($rol === 'admin'){
+                header("Location: index_admin.php");
+            } else {
+                header("Location: index.php");
+            }
             exit();
         } else {
             $error = "Contraseña incorrecta.";
